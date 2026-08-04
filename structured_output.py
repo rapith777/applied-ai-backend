@@ -1,4 +1,3 @@
-import json
 import requests
 
 from pydantic import BaseModel
@@ -12,9 +11,10 @@ def explain_topic_as_json(topic):
     url = "http://127.0.0.1:11434/api/chat"
 
     user_prompt = (
-        f"Explain {topic}."
-        "Return JSON with these fields: "
-        "topic, definition, example."
+        f"Explain {topic} for a beginner. "
+        "Fill every field with real information about the topic. "
+        "Do not return placeholder values such as 'string'. "
+        "Return topic, definition, and example."
     
     )
 
@@ -27,7 +27,10 @@ def explain_topic_as_json(topic):
             }
         ],
         "stream": False,
-        "format": "json"
+        "format": TopicExplanation.model_json_schema(),
+        "options": {
+        "temperature": 0
+        }
     }
 
     response = requests.post(
@@ -41,9 +44,7 @@ def explain_topic_as_json(topic):
 
     assistant_text = response_data["message"]["content"]
 
-    structured_data = json.loads(assistant_text)
-
-    validated_data = TopicExplanation.model_validate(structured_data)
+    validated_data = TopicExplanation.model_validate_json(assistant_text)
 
     return validated_data
 
@@ -51,4 +52,6 @@ def explain_topic_as_json(topic):
 result = explain_topic_as_json("FastAPI")
 
 print(result)
+print(result.topic)
 print(result.definition)
+print(result.example)
