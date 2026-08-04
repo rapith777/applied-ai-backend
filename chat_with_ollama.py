@@ -1,12 +1,17 @@
 import requests
 
 
-def chat_with_ollama(user_prompt):
+def chat_with_ollama(system_instruction, user_prompt, model_name ):
     url = "http://127.0.0.1:11434/api/chat"
 
     payload = {
-        "model": "llama3.2:3b",
+        "model": model_name,
         "messages": [
+            {
+                "role": "system",
+                "content": system_instruction
+            },
+
             {
                 "role": "user",
                 "content": user_prompt
@@ -15,13 +20,18 @@ def chat_with_ollama(user_prompt):
         "stream": False
     }
 
-    response = requests.post(
-        url,
-        json=payload,
-        timeout=60
-    )
+    try:
+        response = requests.post(
+            url,
+            json=payload,
+            timeout=60
+        )
 
-    response.raise_for_status()
+        response.raise_for_status()
+
+    except requests.exceptions.Timeout:
+        return "Ollama took too long to respond."
+    
 
     response_data = response.json()
 
@@ -32,7 +42,9 @@ def chat_with_ollama(user_prompt):
 
 
 answer = chat_with_ollama(
-    "Explain Python functions in one sentence."
+    "you are a python instructor.",
+    "what is fastapi",
+    "llama3.2:3b"
 )
 
 print(answer)
