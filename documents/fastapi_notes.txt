@@ -1,0 +1,11 @@
+FastAPI is a Python framework for building web APIs.
+
+Pydantic is used for request and response validation.
+
+FastAPI supports asynchronous programming using async and await.
+
+Docker can be used to containerize FastAPI applications.
+
+PostgreSQL can be used to persist application data.
+
+Authentication can be implemented using tokens such as JWT.
