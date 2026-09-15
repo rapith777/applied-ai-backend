@@ -5,12 +5,14 @@ venv/
 # Python cache
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
-# Environment/secrets
+# Environment variables / secrets
 .env
 .env.*
 
-# Editor
+# Editor settings
 .vscode/
 
 # Python packaging
@@ -18,5 +20,10 @@ build/
 dist/
 *.egg-info/
 
-# Local vector database
+# Local vector databases
 chroma_db/
+pdf_chroma_db/
+
+# OS files
+.DS_Store
+Thumbs.db
