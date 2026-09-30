@@ -42,7 +42,7 @@ llm_with_tools = llm.bind_tools(tools)
 
 
 # User question.
-question = "Add 25 and 17, and also multiply 6 by 8."
+question = "Add 10 and 5, and multiply 4 and 7."
 
 
 # Start conversation history.
@@ -51,32 +51,34 @@ messages = [
 ]
 
 
-# First LLM call.
-# The LLM decides which tool to use.
-response = llm_with_tools.invoke(messages)
+# Keep running until the LLM gives a final answer.
+while True:
 
-
-# Save the LLM tool request in the conversation history.
-messages.append(response)
-
-
-# Execute every tool requested by the LLM.
-for tool_call in response.tool_calls:
-
-    # Convert the tool name, such as "add",
-    # into the actual LangChain tool object.
-    selected_tool = tools_by_name[
-        tool_call["name"]
-    ]
-
-    # Execute the selected tool with the arguments
-    # chosen by the LLM.
-    tool_result = selected_tool.invoke(
-        tool_call
+    # Send the current conversation history to the LLM.
+    response = llm_with_tools.invoke(
+        messages
     )
+    # Save the LLM response in the conversation history.
+    messages.append(response)
+    # If the LLM did not request a tool,
+    # it has finished the task.
+    if not response.tool_calls:
+        print (response.content)
+        break
 
-    # Save the tool result in the conversation history.
-    messages.append(tool_result)
+    for tool_call in response.tool_calls:
+        # Convert the tool name, such as "add",
+        # into the actual LangChain tool object.
+        selected_tool = tools_by_name[
+            tool_call["name"]
+        ]
+        # Execute the selected tool with the arguments
+        # chosen by the LLM.
+        tool_result = selected_tool.invoke(
+            tool_call
+        )
+        # Save the tool result in the conversation history.
+        messages.append(tool_result)
 
 
 # Send the updated conversation back to the LLM.
